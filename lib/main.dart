@@ -39,12 +39,11 @@ class Board extends StatelessWidget {
   }
 
   Widget _buildTop() {
-
+    //
     //return Text('top');
 
     return Column(
       children: <Widget>[
-        // 여백
         Container(
           color: Colors.lightBlue[100],
           child: Padding(
