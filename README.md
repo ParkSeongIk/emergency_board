@@ -1,4 +1,4 @@
-# emergency_post
+# emergency_board
 
 A new Flutter application.
 
