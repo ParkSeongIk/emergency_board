@@ -1,4 +1,4 @@
-package com.example.emergency_post;
+package com.example.emergency_board;
 
 import io.flutter.embedding.android.FlutterActivity;
 
