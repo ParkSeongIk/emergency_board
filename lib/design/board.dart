@@ -5,13 +5,21 @@ import 'package:emergency_post/design/insert_form.dart';
 
 void main() => runApp(BoardApp());
 
+class PostBoard {
+  String title;
+  //bool isUpdating = false;
+
+  PostBoard(this.title);
+}
+
+
 class BoardApp extends StatelessWidget {
   const BoardApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '[응급의료 게시판]',
+      title: '=== 삐뽀삐뽀 게시판 ===',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -20,19 +28,79 @@ class BoardApp extends StatelessWidget {
   }
 }
 
-class Board extends StatelessWidget {
-  const Board({Key key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key key}) : super(key: key);
 
   @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      // 화면 뼈대
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: Text(
+          '응급의료 게시판',
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.add,
+              color: Colors.black54,
+            ),
+            onPressed: () {
+              // 로그인이 되어있으면 바로 insert_form, 되어있지 않으면 경고창 출력 후 로그인 페이지로 이동
 
+              // 로그인 X, 로그인 페이지
+              if (!true) {}
+              // 로그인 O
+              else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BoardInsertFormApp(),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: <Widget>[
+          _buildTop(),
+          _buildMiddle(),
+          _buildBottom(),
+        ],
+      ), // 몸체
+    );
+  }
 
-    return ListView(
-      children: <Widget>[
-        _buildTop(),
-        _buildMiddle(),
-        _buildBottom(),
-      ],
+  final _items = <PostBoard>[];
+
+  var _pbController = TextEditingController();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _pbController.dispose(); // Textbox 사용이 끝나면 해제.
+    super.dispose();
+  }
+
+  Widget _buildItemWidget(PostBoard pb) {
+    return ListTile(
+      onTap: () {},
+      title: Text(
+        pb.title,
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () => _delete_testBoard(pb),
+      ),
     );
   }
 
@@ -42,15 +110,6 @@ class Board extends StatelessWidget {
 
     return Column(
       children: <Widget>[
-        Container(
-          color: Colors.black12,
-          height: 5,
-          child: Row(
-            children: <Widget>[
-              Container(),
-            ],
-          ),
-        ),
         Container(
           color: Colors.lightBlue[100],
           child: Padding(
@@ -62,9 +121,9 @@ class Board extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 5),
                     child: TextField(
+                      controller: _pbController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        //labelText: '제목/글쓴이',
                       ),
                     ),
                   ),
@@ -77,8 +136,8 @@ class Board extends StatelessWidget {
 
                       child: Text('검색'),
                       onPressed: () {
-                        
-                        // 로그인이 되어있으면 바로 insert_form, 되어있지 않으면 경고창 출력 후 로그인 페이지로 이동
+
+
 
                       },
                     ),
@@ -90,72 +149,74 @@ class Board extends StatelessWidget {
         ),
         Container(
           color: Colors.black12,
-          height: 5,
+          height: 2,
           child: Row(
             children: <Widget>[
               Container(),
             ],
           ),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () => _insert_testBoard(PostBoard(_pbController.text)),
+              child: Text('추가'),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(onPressed: () {}, child: Text('수정'),),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMiddle() {
+
+
+    //return Text('middle');
+
+    // //게시글 표시 (임시)
+    // final items = List.generate(30, (i) {
+    //   return InkWell(
+    //     onTap: () {
+    //       print('클릭');
+    //     },
+    //     child: ListTile(
+    //       title: Text('게시글이 표시됩니다'),
+    //     ),
+    //   );
+    // });
+    //
+    // return Container(
+    //   child: Column(
+    //     children: <Widget>[
+    //       ListView(
+    //         physics: NeverScrollableScrollPhysics(),
+    //         shrinkWrap: true,
+    //         children: items,
+    //       ),
+    //     ],
+    //   ),
+    // );
+
+
+    return Column(
+      children: <Widget>[
+        ListView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          children: _items.map((pb) => _buildItemWidget(pb)).toList(),
+
+        ),
       ],
     );
 
 
-  }
-
-  Widget _buildMiddle() {
-    //ListView.separated
-    //itemCount: entries.length,
-
-    //return Text("Middle");
-
-    //게시글 표시 (임시)
-    final items = List.generate(30, (i) {
-      return InkWell(
-        onTap: () {
-          print('클릭');
-        },
-        child: ListTile(
-          title: Text('게시글이 표시됩니다'),
-        ),
-      );
-    });
-
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListView(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            children: items,
-          ),
-        ],
-      ),
-    );
-
-    // return ListView.separated(
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return ListTile(
-    //         title: Text('item $index'),
-    //       );
-    //     },
-    //     separatorBuilder: (BuildContext context, int index) => const Divider(),
-    //     itemCount: 30,
-    // );
-    // final List<String> entries = <String>['A', 'B', 'C'];
-    // final List<int> colorCodes = <int>[600, 500, 100];
-    //
-    // return ListView.builder(
-    //     padding: const EdgeInsets.all(8),
-    //     itemCount: entries.length,
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return Container(
-    //         height: 50,
-    //         color: Colors.amber[colorCodes[index]],
-    //         child: Center(child: Text('Entry ${entries[index]}')),
-    //       );
-    //     }
-    // );
   }
 
   Widget _buildBottom() {
@@ -198,38 +259,26 @@ class Board extends StatelessWidget {
       ],
     );
   }
-}
 
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          '응급의료 게시판',
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: Colors.blueAccent,
-            ),
-            onPressed: () {},
-          )
-        ],
-        centerTitle: true,
-      ),
-      body: Board(),
-    );
+  //
+  void _insert_testBoard(PostBoard pb) {
+    setState(() {
+      _items.add(pb);
+      _pbController.text = '';
+    });
   }
+
+  void _update_testBoard(PostBoard pb) {
+    setState(() {
+
+    });
+  }
+
+  void _delete_testBoard(PostBoard pb) {
+    setState(() {
+      _items.remove(pb);
+    });
+  }
+
+
 }
