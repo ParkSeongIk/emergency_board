@@ -1,50 +1,52 @@
 import 'package:emergency_post/design/board.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(BoardInsertFormApp());
+void main() => runApp(BoardModifyFormApp());
 
-class BoardInsertFormApp extends StatelessWidget {
-  const BoardInsertFormApp({Key key}) : super(key: key);
+MyHomePage board = MyHomePage();
+
+class BoardModifyFormApp extends StatelessWidget {
+  const BoardModifyFormApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '[게시글 작성]',
+      title: '[게시글 수정]',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: BoardInsertFormPage(),
+      home: BoardModifyFormPage(),
     );
   }
 }
 
-class BoardInsertFormPage extends StatefulWidget {
-  const BoardInsertFormPage({Key key, this.title}) : super(key: key);
+class BoardModifyFormPage extends StatefulWidget {
+  const BoardModifyFormPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _BoardInsertFormState createState() => _BoardInsertFormState();
+  _BoardModifyFormState createState() => _BoardModifyFormState();
 
 }
 
-class _BoardInsertFormState extends State<BoardInsertFormPage> {
+class _BoardModifyFormState extends State<BoardModifyFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          '게시글 작성',
+          '게시글 수정',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
       ),
       body: ListView(
         children: <Widget>[
-          _InsertFormTop(),
-          _InsertFormMiddle(),
-          _InsertFormBottom(),
+          _ModifyFormTop(),
+          _ModifyFormMiddle(),
+          _ModifyFormBottom(),
         ],
       ),
     );
@@ -62,7 +64,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
     super.dispose();
   }
 
-  Widget _InsertFormTop() {
+  Widget _ModifyFormTop() {
     //return Text("제목, 파일/사진 첨부");
     return Column(
       children: <Widget>[
@@ -164,7 +166,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
     );
   }
 
-  Widget _InsertFormMiddle() {
+  Widget _ModifyFormMiddle() {
     //return Text("내용");
     return Column(
       children: <Widget>[
@@ -200,7 +202,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
     );
   }
 
-  Widget _InsertFormBottom() {
+  Widget _ModifyFormBottom() {
     //return Text("버튼");
     return Column(
       children: <Widget>[
@@ -219,7 +221,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
-                  child: Text('등록', textScaleFactor: 1.5, ),
+                  child: Text('수정', textScaleFactor: 1.5, ),
                   style: ElevatedButton.styleFrom(
                     primary: Colors.black38,
                     minimumSize: Size(125, 45),
@@ -229,7 +231,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
 
 
                     // 등록
-                    //
+                    //board._Modify_testBoard(PostBoard(_titleController.text));
 
 
                     Navigator.push(
@@ -253,7 +255,7 @@ class _BoardInsertFormState extends State<BoardInsertFormPage> {
                       context: context,
                       barrierDismissible: false,
 
-                        builder: (BuildContext context) {
+                      builder: (BuildContext context) {
                         return AlertDialog(
                           content: SingleChildScrollView(
                             child: ListBody(

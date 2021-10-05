@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import 'package:emergency_post/design/insert_form.dart';
-import 'package:emergency_post/design/modify_form.dart';
 
 final _items = <PostBoard>[];
 
@@ -195,7 +194,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              // 빈 칸 허용 X.
               onPressed: () => _insert_testBoard(PostBoard(_controller.text)),
               child: Text('추가'),
             ),
@@ -204,15 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BoardModifyFormApp(),
-                ),
-              ),
-              child: Text('수정'),
-            ),
+            ElevatedButton(onPressed: () {}, child: Text('수정'),),
           ],
         ),
       ],
@@ -327,4 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 }
+//  제목, 내용, 댓글, 좋아요 , 스크랩
+
+
 
