@@ -5,25 +5,52 @@ void main() {
   runApp(ModifyForm());
 }
 
-// insert_form.dart 구조와 같음 (설명 생략)
-
 class ModifyForm extends StatefulWidget {
+  final BoardData get_data_for_modifying;
 
-  ModifyForm({Key key}) : super(key: key);
+  ModifyForm({Key key, @required this.get_data_for_modifying})
+      : super(key: key);
 
   @override
   ModifyFormState createState() => ModifyFormState();
 }
 
 class ModifyFormState extends State<ModifyForm> {
-
   final _formKey = GlobalKey<FormState>();
 
-  ModifyForm modifyform = new ModifyForm();
-  Board board = new Board();
+  // 미사용
+  // ModifyForm modifyform = new ModifyForm();
+
+  Board board = Board();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('게시글 수정 위젯 생성 (initState)');
+  }
+
+  // 게시글 제목 , 게시글 내용 controller
+
+  var _titleController = TextEditingController();
+  var _contentController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _contentController.dispose();
+    _titleController.dispose();
+    super.dispose();
+    print('게시글 수정 위젯 종료 (dispose)');
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('게시글 수정 실행 (build)');
+
+    _titleController.text = widget.get_data_for_modifying.title;
+    _contentController.text = widget.get_data_for_modifying.description;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -36,10 +63,13 @@ class ModifyFormState extends State<ModifyForm> {
         key: _formKey,
         child: ListView(
           children: <Widget>[
+            // 회색 구분 선
             Container(
               color: Colors.black12,
               height: 1,
             ),
+
+            // 게시글 제목 입력 필드 박스
             Container(
               color: Colors.white,
               child: Padding(
@@ -51,10 +81,11 @@ class ModifyFormState extends State<ModifyForm> {
                         controller: _titleController,
                         autofocus: true,
                         validator: (value) {
-                          if(value.isEmpty) {return '제목 누락';}
+                          if (value.isEmpty) {
+                            return '제목 누락';
+                          }
                           return null;
                         },
-
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '제목',
@@ -62,7 +93,6 @@ class ModifyFormState extends State<ModifyForm> {
                             color: Colors.black26,
                           ),
                         ),
-
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -72,11 +102,13 @@ class ModifyFormState extends State<ModifyForm> {
                 ),
               ),
             ),
+
+            // 사진 및 파일 첨부 UI (보류)
             Container(
               color: Colors.white10,
               child: Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: Row(
                   // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -84,7 +116,10 @@ class ModifyFormState extends State<ModifyForm> {
                       height: 2,
                       color: Colors.black12,
                     ),
-
+                    // Text('board.dart의 변수 출력 : '+board.i.toString()+' / '),
+                    // Text(_titleController.text+' / '),
+                    // Text(_contentController.text+' / '),
+                    // Text('list 길이 : '+board.list.length.toString()),
                     // OutlinedButton(
                     //   onPressed: () {
                     //
@@ -113,11 +148,13 @@ class ModifyFormState extends State<ModifyForm> {
               ),
             ),
 
-
+            // 회색 구분 선
             Container(
               color: Colors.black12,
               height: 1,
             ),
+
+            // 게시글 내용 입력 필드 박스
             Container(
               color: Colors.white,
               child: Padding(
@@ -128,7 +165,9 @@ class ModifyFormState extends State<ModifyForm> {
                       child: TextFormField(
                         controller: _contentController,
                         validator: (value) {
-                          if(value.isEmpty) {return '내용 누락';}
+                          if (value.isEmpty) {
+                            return '내용 누락';
+                          }
                           return null;
                         },
                         decoration: InputDecoration(
@@ -148,10 +187,15 @@ class ModifyFormState extends State<ModifyForm> {
                 ),
               ),
             ),
+
+            // 회색 구분 선
             Container(
               color: Colors.black12,
               height: 1,
             ),
+
+            // 등록 및 수정 버튼
+
             Container(
               color: Colors.white10,
               child: Padding(
@@ -161,7 +205,7 @@ class ModifyFormState extends State<ModifyForm> {
                   children: <Widget>[
                     ElevatedButton(
                       child: Text(
-                        '저장',
+                        '수정',
                         textScaleFactor: 1.5,
                       ),
                       style: ElevatedButton.styleFrom(
@@ -172,8 +216,7 @@ class ModifyFormState extends State<ModifyForm> {
                         ).shadowColor,
                       ),
                       onPressed: () {
-
-                        if(_titleController.text=='') {
+                        if (_titleController.text == '') {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -188,7 +231,7 @@ class ModifyFormState extends State<ModifyForm> {
                                   ),
                                 ),
                                 contentPadding:
-                                EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
+                                    EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
@@ -200,9 +243,7 @@ class ModifyFormState extends State<ModifyForm> {
                               );
                             },
                           );
-                        }
-
-                        else if(_contentController.text=='') {
+                        } else if (_contentController.text == '') {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -217,7 +258,7 @@ class ModifyFormState extends State<ModifyForm> {
                                   ),
                                 ),
                                 contentPadding:
-                                EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
+                                    EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
@@ -231,16 +272,14 @@ class ModifyFormState extends State<ModifyForm> {
                           );
                         }
 
-                        if(_formKey.currentState.validate()) {
-                          //_addBoardVar(BoardVar(_titleController.text, _contentController.text));
+                        if (_formKey.currentState.validate()) {
+                          final change_item = new BoardData(
+                              widget.get_data_for_modifying.listSortingNum,
+                              _titleController.text,
+                              _contentController.text);
 
-                          Navigator.pop(context, _titleController.text);
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('게시글이 수정되었습니다.')));
+                          Navigator.pop(context, change_item);
                         }
-
-
-
                       },
                     ),
                     ElevatedButton(
@@ -256,6 +295,7 @@ class ModifyFormState extends State<ModifyForm> {
                         ).shadowColor,
                       ),
                       onPressed: () {
+
                         showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -270,18 +310,15 @@ class ModifyFormState extends State<ModifyForm> {
                                 ),
                               ),
                               contentPadding:
-                              EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
+                                  EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 10.0),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
+                                    // stack에서 alert 창 pop
                                     Navigator.pop(context);
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              Board()),
-                                      ModalRoute.withName(''),
-                                    );
+
+                                    // stack에서 게시글 수정 위젯 pop
+                                    Navigator.pop(context);
                                   },
                                   child: Text('확인'),
                                 ),
@@ -302,28 +339,10 @@ class ModifyFormState extends State<ModifyForm> {
               ),
             ),
 
-
+            // 수정 버튼 부분 끝
           ],
         ),
       ),
     );
   }
-
-  var _titleController = TextEditingController();
-  var _contentController = TextEditingController();
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _contentController.dispose();
-    _titleController.dispose();
-    super.dispose();
-  }
-
-  // void _addBoardVar(BoardVar bv) {
-  //   setState(() {
-  //     board.list.add(bv);
-  //   });
-  // }
-
 }

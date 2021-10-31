@@ -6,13 +6,11 @@ void main() {
 }
 
 
-
 class InsertForm extends StatefulWidget {
 
-  // 미사용
-  // List<BoardVar> inlist = <BoardVar>[];
+  int index;
 
-  InsertForm({Key key}) : super(key: key);
+  InsertForm({Key key, @required index}) : super(key: key);
 
   @override
   InsertFormState createState() => InsertFormState();
@@ -25,10 +23,33 @@ class InsertFormState extends State<InsertForm> {
   // 미사용
   // InsertForm insertform = new InsertForm();
 
-  Board board = new Board();
+  Board board = Board();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('게시글 작성 위젯 생성 (initState)');
+  }
+
+  // 게시글 제목 , 게시글 내용 controller
+
+  var _titleController = TextEditingController();
+  var _contentController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _contentController.dispose();
+    _titleController.dispose();
+    super.dispose();
+    print('게시글 작성 위젯 종료 (dispose)');
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    print('게시글 작성 실행 (build)');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -95,7 +116,10 @@ class InsertFormState extends State<InsertForm> {
                       height: 2,
                       color: Colors.black12,
                     ),
-
+                    // Text('board.dart의 변수 출력 : '+board.i.toString()+' / '),
+                    // Text(_titleController.text+' / '),
+                    // Text(_contentController.text+' / '),
+                    // Text('list 길이 : '+board.list.length.toString()),
                     // OutlinedButton(
                     //   onPressed: () {
                     //
@@ -254,27 +278,11 @@ class InsertFormState extends State<InsertForm> {
 
                         if(_formKey.currentState.validate()) {
 
-                          // 출력 안됨 (list)
-                          // _addBoardVar(BoardVar(_titleController.text, _contentController.text));
+                          final input_item = new BoardData(widget.index, _titleController.text,_contentController.text);
 
-                          // 미사용
-                          // Navigator.pushAndRemoveUntil(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (BuildContext context) =>
-                          //         Board(
-                          //           // list: insertform.inlist,
-                          //         ),
-                          //   ),
-                          //   ModalRoute.withName(''),
-                          // );
+                          Navigator.pop(context, input_item);
 
 
-                          Navigator.pop(context, _titleController.text);
-
-                          // 게시글 입력 토스트 메시지
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('게시글이 등록되었습니다.')));
                         }
 
 
@@ -312,14 +320,13 @@ class InsertFormState extends State<InsertForm> {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
+
+                                    // stack에서 alert 창 pop
                                     Navigator.pop(context);
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              Board()),
-                                      ModalRoute.withName(''),
-                                    );
+
+                                    // stack에서 게시글 작성 위젯 pop
+                                    Navigator.pop(context);
+
                                   },
                                   child: Text('확인'),
                                 ),
@@ -340,7 +347,7 @@ class InsertFormState extends State<InsertForm> {
               ),
             ),
 
-            // 등록 및 수정 버튼 부분 끝
+            // 등록 버튼 부분 끝
 
 
 
@@ -350,24 +357,5 @@ class InsertFormState extends State<InsertForm> {
     );
   }
 
-  // 게시글 제목 , 게시글 내용 controller
-
-  var _titleController = TextEditingController();
-  var _contentController = TextEditingController();
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _contentController.dispose();
-    _titleController.dispose();
-    super.dispose();
-  }
-
-  // 출력 안됨 (list)
-  // void _addBoardVar(BoardVar bv) {
-  //   setState(() {
-  //     board.list.add(bv);
-  //   });
-  // }
 
 }

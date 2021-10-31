@@ -9,19 +9,15 @@ void main() {
   runApp(Board());
 }
 
-class BoardVar {
-  final String title;
-  final String description;
+class BoardData {
+  int listSortingNum;
+  String title;
+  String description;
 
-  BoardVar(this.title, this.description);
+  BoardData(this.listSortingNum, this.title, this.description);
 }
 
 class Board extends StatefulWidget {
-
-  // 출력 안됨 (list)
-  // final List<BoardVar> list = <BoardVar>[]; // <datatype> ,  [length]
-
-  var result = '';
 
   Board({Key key}) : super(key: key);
 
@@ -31,11 +27,34 @@ class Board extends StatefulWidget {
 
 class BoardState extends State<Board> {
 
-  Board board = new Board();
+  List<BoardData> list = <BoardData>[];
+
+  int i=0;
+  int j=0;
+  var list_size = 0.0;
+
+  static final int MODIFYING = 1;
+  static final int DELETING = 2;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('게시글 목록 위젯 생성 (initState)');
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('게시글 목록 위젯 종료 (dispose)');
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
+    print('게시글 목록 실행 (build)');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -51,9 +70,10 @@ class BoardState extends State<Board> {
               size: 30,
             ),
             onPressed: () {
-
               // 게시글 작성 네비게이터
+              // _navigateAndInsertDataTest(context);
               _navigateAndInsertData(context);
+
 
               // Navigator.push(
               //   context,
@@ -117,118 +137,144 @@ class BoardState extends State<Board> {
           //   height: 1,
           // ),
 
-          // 게시글 목록 표시 (테스트)
-
-          // ListView.builder(
-          //   itemBuilder: (context, index) {
-          //     return ListTile(
-          //       title: Text(board.list[index].title),
-          //       onTap: () {
-          //         Navigator.push(
-          //             context,
-          //             MaterialPageRoute(builder: (context) => BoardContent(/*eInfo: list[index]*/),),
-          //         );
-          //       },
-          //     );
-          //   },
-          // ),
-
-          // ListTile 정상 출력 여부 테스트 (ListTile 위)
-          Text('가'),
+          // // ListTile 정상 출력 여부 테스트 (ListTile 위)
+          // Text('리스트 출력 전'),
 
           Container(
-            height: 100,
+            height: list_size,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
 
-              // 출력 안됨 (list)
-              // child: ListView(
-              //     children: board.list.map((bv) => _buildItemWidget(bv)).toList(),
-              // ),
-
-
               child: ListView(
-                children: <Widget>[
-                  ListTile(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BoardContent(),
-                        ),
-                      );
-                    },
-                    title: Text(
-                      board.result,
-                    ),
-                  ),
-
-                  Container(
-                    color: Colors.black12,
-                    height: 1,
-                  ),
-
-                ],
+                children: list.map((data) => _buildItemWidget(data)).toList(),
               ),
-            ),
+
+
+              ),
           ),
 
-          // ListTile 정상 출력 여부 테스트 (ListTile 아래)
-          Text('나'),
+          // // ListTile 정상 출력 여부 테스트 (ListTile 아래)
+          // Text('리스트가 정상적으로 출력됨'),
+          Text('게시글 수 : ' + list.length.toString()),
+
+
+
+          // + 블럭을 설정하여 페이지를 만들어야 함.
+
+
 
         ],
       ),
     );
   }
 
-  var _controller = TextEditingController();
+  // var _controller = TextEditingController(); // 검색란 컨트롤러 (보류)
 
-
-  // 게시글 작성 네비게이터
   _navigateAndInsertData(BuildContext context) async {
-    board.result = await Navigator.push(
+
+
+    // i : 게시글 정렬을 위한 int 형 변수
+    BoardData get_item = new BoardData(i, null, null);
+
+    print((i+j+1).toString()+'번째 게시판 등록 시도');
+    get_item = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => InsertForm()),
+      MaterialPageRoute(builder: (context) => InsertForm(index: i)),
     );
 
-    // 널 값 에러 조건 처리 부분
-
-    if (board.result!=null) {
-      setState(() {
-        board.result;
-    });
-
+    if(get_item==null) {
+      print('게시글 입력 화면에서 빠져나옴');
+      get_item = BoardData(i, null, null);
+      return;
     }
-    else {
+
+    else if(list.length<=0) {
+      print('리스트 길이가 0일 때의 리스트 추가 로직에 넘어옴');
       setState(() {
-        board.result = '';
+        _addBoardData(BoardData(i, get_item.title, get_item.description));
       });
+      print((i+j+1).toString()+'번째 게시판 등록 완료 (앱 실행 최초)');
     }
 
+    else {
+      print('리스트 길이가 1이상일 때의 리스트 추가 로직에 넘어옴');
+      final item = list[list.length - 1];
+
+      if (item is BoardData)
+        _addBoardData(BoardData(i, get_item.title, get_item.description));
+
+      print((i+j+1).toString()+'번째 게시판 등록 완료');
+    }
+
+    i--;
+    j+=2;
+    list_size += 60;
+    // 게시글이 등록된 사실을 토스트 메시지로 출력
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('게시글이 등록되었습니다.')));
+
+    try {
+      print('등록된 제목 : ' + get_item.title);
+      print('등록된 내용 : ' + get_item.description);
+      print('list 길이 출력 : ' + list.length.toString());
+    }
+    catch(on, StackTrace) {
+      StackFrame.asynchronousSuspension;
+    }
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _controller.dispose();
-    super.dispose();
+  Widget _buildItemWidget (BoardData data) {
+
+    final selected_item = new BoardData(data.listSortingNum, data.title, data.description);
+
+    // List<int> tmp = [10,20,30];
+    // int findindex = tmp.indexOf(10);
+    // print(findindex);
+    // list.first.listSortingNum;
+    // list.single.listSortingNum;
+    int thisIndex = list.indexOf(selected_item); // -1
+
+      return Column(
+        children: <Widget>[
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      BoardContent(selected_item: selected_item, list: list, index: thisIndex),
+                ),
+              );
+            },
+            title: Text(
+              data.title,
+            ),
+          ),
+          Container(
+            color: Colors.black12,
+            height: 1,
+          ),
+        ],
+      );
+
   }
 
-  // 출력 안됨 (list)
-  // Widget _buildItemWidget(BoardVar bv) {
-  //   ListTile(
-  //     onTap: () {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => BoardContent(),
-  //         ),
-  //       );
-  //     },
-  //     title: Text(
-  //       bv.title,
-  //     ),
-  //   );
+
+
+
+  void _addBoardData(BoardData data) {
+    setState(() {
+      list.add(data);
+      list.sort((a,b) => a.listSortingNum.compareTo(b.listSortingNum));
+    });
+    print('list에 추가완료');
+  }
+
+  // void _deleteBoardData(BoardData data) {
+  //   setState(() {
+  //     list.remove(data);
+  //     list.sort((a,b) => a.listSortingNum.compareTo(b.listSortingNum));
+  //   });
+  //   print('list에서 삭제완료');
   // }
-}
-
+  }
