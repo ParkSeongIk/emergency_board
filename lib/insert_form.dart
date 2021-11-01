@@ -8,9 +8,13 @@ void main() {
 
 class InsertForm extends StatefulWidget {
 
+
+  int index_listSorting;
+
   int index;
 
-  InsertForm({Key key, @required index}) : super(key: key);
+
+  InsertForm({Key key, @required this.index_listSorting, @required this.index}) : super(key: key);
 
   @override
   InsertFormState createState() => InsertFormState();
@@ -20,10 +24,7 @@ class InsertFormState extends State<InsertForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  // 미사용
-  // InsertForm insertform = new InsertForm();
-
-  Board board = Board();
+  DateTime now = DateTime.now();
 
   @override
   void initState() {
@@ -278,7 +279,13 @@ class InsertFormState extends State<InsertForm> {
 
                         if(_formKey.currentState.validate()) {
 
-                          final input_item = new BoardData(widget.index, _titleController.text,_contentController.text);
+                          final input_iSort = widget.index_listSorting;
+                          final input_i = widget.index;
+
+                          final input_item = new BoardData(input_iSort, input_i, _titleController.text,_contentController.text, now);
+
+                          print('insert_form i Test Printing'+input_iSort.toString()+'  '+input_i.toString());
+                          print('insert_form i Test Printing'+widget.index_listSorting.toString()+'  '+widget.index.toString());
 
                           Navigator.pop(context, input_item);
 

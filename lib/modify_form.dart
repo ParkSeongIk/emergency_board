@@ -16,12 +16,10 @@ class ModifyForm extends StatefulWidget {
 }
 
 class ModifyFormState extends State<ModifyForm> {
+
   final _formKey = GlobalKey<FormState>();
 
-  // 미사용
-  // ModifyForm modifyform = new ModifyForm();
-
-  Board board = Board();
+  DateTime now = new DateTime.now();
 
   @override
   void initState() {
@@ -273,10 +271,14 @@ class ModifyFormState extends State<ModifyForm> {
                         }
 
                         if (_formKey.currentState.validate()) {
+
+                          final iSort = widget.get_data_for_modifying.listSortingNum;
+                          final modify_i = widget.get_data_for_modifying.listNum;
+
                           final change_item = new BoardData(
-                              widget.get_data_for_modifying.listSortingNum,
+                              iSort, modify_i,
                               _titleController.text,
-                              _contentController.text);
+                              _contentController.text, now);
 
                           Navigator.pop(context, change_item);
                         }

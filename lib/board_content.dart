@@ -17,10 +17,8 @@ class BoardContent extends StatefulWidget {
 
 
   final BoardData selected_item;
-  final List<BoardData> list;
-final index;
 
-  BoardContent({Key key, @required this.selected_item, @required this.list, @required this.index}) : super(key: key);
+  BoardContent({Key key, @required this.selected_item}) : super(key: key);
 
 
 
@@ -35,12 +33,14 @@ class _BoardContentState extends State<BoardContent> {
   int cmtIndex = 0;
   final _cmtItems = <CmtData>[];
   double list_size = 0.0;
+  static const int MODIFY_DATA = 1;
+  static const int DELETE_DATA = 2;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.index.toString()+' 번째 게시글 위젯 생성 (initState)');
+    print(widget.selected_item.listNum.toString()+' 번째 게시글 위젯 생성 (initState)');
   }
 
 
@@ -50,12 +50,12 @@ class _BoardContentState extends State<BoardContent> {
     // TODO: implement dispose
     _cmtController.dispose();
     super.dispose();
-    print(widget.index.toString()+' 번째 게시글 위젯 종료 (dispose)');
+    print(widget.selected_item.listNum.toString()+' 번째 게시글 위젯 종료 (dispose)');
   }
 
   @override
   Widget build(BuildContext context) {
-    print(widget.index.toString()+' 번째 게시글 실행 (build)');
+    print(widget.selected_item.listNum.toString()+' 번째 게시글 실행 (build)');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -204,7 +204,7 @@ class _BoardContentState extends State<BoardContent> {
                           shadowColor: ThemeData(shadowColor: Colors.white,).shadowColor,
                         ),
                         onPressed: () {
-                          // text가 listtile로 출력됨. - listtile내에서 삭제기능만 넣을 예정. (시간 부족에 따라 기능 최소화)
+                          // text가 listtile로 출력됨. - listtile 내에서 삭제기능만 넣을 예정.
                           _addCmtData(CmtData(--cmtIndex, '응급의료앱 개발자', _cmtController.text));
                           list_size += 120;
                         },
@@ -252,17 +252,15 @@ class _BoardContentState extends State<BoardContent> {
   // 게시글 수정 네비게이터
   _navigateAndModifyData(BuildContext context) async {
 
-    int item_listNo = widget.selected_item.listSortingNum;
+    int item_listSortingNo = widget.selected_item.listSortingNum;
+    int item_listNo = widget.selected_item.listNum;
     String item_title = widget.selected_item.title;
-    String item_content = widget.selected_item.description;
+    String item_description = widget.selected_item.description;
+    DateTime item_datetime = widget.selected_item.datetime;
 
     BoardData set_data = new BoardData(
-        item_listNo, item_title, item_content);
-    BoardData get_data = new BoardData(item_listNo, null, null);
-
-
-    print('수정하기 전 제목 : '+item_title);
-    print('수정하기 전 내용 : '+item_content);
+        item_listSortingNo, item_listNo, item_title, item_description, item_datetime);
+    BoardData get_data = new BoardData(item_listSortingNo, item_listNo, null, null, null);
 
 
     get_data = await Navigator.push(
@@ -277,27 +275,32 @@ class _BoardContentState extends State<BoardContent> {
 
 
     if(get_data==null) {
-      print('게시글 수정 화면에서 빠져나옴');
-      get_data=BoardData(item_listNo, null, null);
-      return;
+        get_data = BoardData(item_listSortingNo, item_listNo, null, null, null);
+        return;
     }
 
     else {
       try {
 
-        print('수정하기 전 제목 : '+item_title);
-        print('수정하기 전 내용 : '+item_content);
+        print('게시글 수정 작업 로직으로 넘어옴');
 
-        print('수정할 제목 : '+get_data.title);
-        print('수정할 내용 : '+get_data.description);
-        print('게시글 수 : ' + widget.list.length.toString()); // ok
+        print('게시글 정렬 값 : '+item_listSortingNo.toString());
+        print('');
+        print('게시글 번호 : '+item_listNo.toString());
+        print('');
+        print('수정하기 전 제목 : '+item_title.toString());
+        print('수정하기 전 내용 : '+item_description.toString());
+        print('');
+        print('수정할 제목 : '+get_data.title.toString());
+        print('수정할 내용 : '+get_data.description.toString());
+        print('게시글이 마지막으로 수정된 시간 : '+get_data.datetime.toString());
+        print('');
+        print('이후, 수정처리됨');
 
-        print("이후, 게시글 내용이 수정되는 로직 (UI 에서는 작성하지 않음)");
+        // 수정 처리
+        final return_item = new ManipulateData(item_listNo, get_data.title, get_data.description, MODIFY_DATA);
+        Navigator.pop(context, return_item);
 
-
-        // 값 출력 테스트
-
-        // print('첫 번째 인덱스 따오기 : '+widget.list.first.title.toString()); // 성공
       }
       catch(on, StackTrace) {
         StackFrame.asynchronousSuspension;
@@ -305,16 +308,17 @@ class _BoardContentState extends State<BoardContent> {
 
     }
 
-    // 게시글이 수정된 사실을 토스트 메시지로 출력
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('게시글이 수정되었습니다.')));
-
-
   } // 게시글 수정 네비게이터 부분 끝.
 
   // 게시글 삭제 네비게이터
   _MakeSureWhetherDeleteThisItem(BuildContext context) async {
     var delete_flag = false; // (bool) : 삭제할 것인지 신호를 받는 역할
+
+    int item_listSortingNo = widget.selected_item.listSortingNum;
+    int item_listNo = widget.selected_item.listNum;
+    String item_title = widget.selected_item.title;
+    String item_description = widget.selected_item.description;
+    DateTime item_datetime = widget.selected_item.datetime;
 
     delete_flag = await showDialog(
       context: context,
@@ -354,13 +358,21 @@ class _BoardContentState extends State<BoardContent> {
 
     if(delete_flag==true) {
 
-      print('게시글 삭제 작업 (UI 에서는 작성하지 않음)');
+      print('게시글 삭제 작업 로직으로 넘어옴');
 
-      // 게시글이 삭제된 사실을 토스트 메시지로 출력
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text('게시글이 삭제되었습니다.')));
+      print('게시글 정렬 값 : '+item_listSortingNo.toString());
+      print('');
+      print('게시글 번호 : '+item_listNo.toString());
+      print('');
+      print('삭제될 게시글의 제목 : '+item_title.toString());
+      print('삭제될 게시글의 내용 : '+item_description.toString());
+      print('');
+      print('게시글이 마지막으로 수정된 시간 : '+item_datetime.toString());
+      print('');
+      print('이후, 삭제처리됨');
 
-      // Navigator.pop(context);
+      final return_item = new ManipulateData(item_listNo, item_title, item_description, DELETE_DATA);
+      Navigator.pop(context, return_item);
 
     }
 
@@ -378,7 +390,7 @@ class _BoardContentState extends State<BoardContent> {
             data.id,
           ),
           trailing: IconButton(
-            icon: Icon(Icons.delete_sharp),
+            icon: Icon(Icons.remove),
             onPressed: () => _deleteCmtData(data),
           ),
         ),
