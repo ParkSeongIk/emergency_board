@@ -13,8 +13,10 @@ class InsertForm extends StatefulWidget {
 
   int index;
 
+  String writer;
 
-  InsertForm({Key key, @required this.index_listSorting, @required this.index}) : super(key: key);
+
+  InsertForm({Key key, @required this.index_listSorting, @required this.index, @required this.writer}) : super(key: key);
 
   @override
   InsertFormState createState() => InsertFormState();
@@ -24,13 +26,11 @@ class InsertFormState extends State<InsertForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  DateTime now = DateTime.now();
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('게시글 작성 위젯 생성 (initState)');
+    // print('게시글 작성 위젯 생성 (initState)');
   }
 
   // 게시글 제목 , 게시글 내용 controller
@@ -44,13 +44,13 @@ class InsertFormState extends State<InsertForm> {
     _contentController.dispose();
     _titleController.dispose();
     super.dispose();
-    print('게시글 작성 위젯 종료 (dispose)');
+    // print('게시글 작성 위젯 종료 (dispose)');
   }
 
 
   @override
   Widget build(BuildContext context) {
-    print('게시글 작성 실행 (build)');
+    // print('게시글 작성 실행 (build)');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -277,15 +277,26 @@ class InsertFormState extends State<InsertForm> {
                           );
                         }
 
+
+                        // 게시글이 삽입됨.
                         if(_formKey.currentState.validate()) {
 
                           final input_iSort = widget.index_listSorting;
                           final input_i = widget.index;
 
-                          final input_item = new BoardData(input_iSort, input_i, _titleController.text,_contentController.text, now);
+                          DateTime datetime = DateTime.now();
 
-                          print('insert_form i Test Printing'+input_iSort.toString()+'  '+input_i.toString());
-                          print('insert_form i Test Printing'+widget.index_listSorting.toString()+'  '+widget.index.toString());
+                          String year = datetime.year.toString();
+                          String month = datetime.month.toString();
+                          String day = datetime.day.toString();
+
+                          String hour = datetime.hour.toString();
+                          String minute = datetime.minute.toString();
+                          String second = datetime.second.toString();
+
+                          String thisTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
+
+                          final input_item = new BoardData(input_iSort, input_i, widget.writer ,_titleController.text,_contentController.text, thisTime, true);
 
                           Navigator.pop(context, input_item);
 

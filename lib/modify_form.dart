@@ -25,7 +25,7 @@ class ModifyFormState extends State<ModifyForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('게시글 수정 위젯 생성 (initState)');
+    // print('게시글 수정 위젯 생성 (initState)');
   }
 
   // 게시글 제목 , 게시글 내용 controller
@@ -39,12 +39,12 @@ class ModifyFormState extends State<ModifyForm> {
     _contentController.dispose();
     _titleController.dispose();
     super.dispose();
-    print('게시글 수정 위젯 종료 (dispose)');
+    // print('게시글 수정 위젯 종료 (dispose)');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('게시글 수정 실행 (build)');
+    // print('게시글 수정 실행 (build)');
 
     _titleController.text = widget.get_data_for_modifying.title;
     _contentController.text = widget.get_data_for_modifying.description;
@@ -272,13 +272,22 @@ class ModifyFormState extends State<ModifyForm> {
 
                         if (_formKey.currentState.validate()) {
 
-                          final iSort = widget.get_data_for_modifying.listSortingNum;
-                          final modify_i = widget.get_data_for_modifying.listNum;
+                          DateTime datetime = DateTime.now();
+
+                          String year = datetime.year.toString();
+                          String month = datetime.month.toString();
+                          String day = datetime.day.toString();
+
+                          String hour = datetime.hour.toString();
+                          String minute = datetime.minute.toString();
+                          String second = datetime.second.toString();
+
+                          String thisTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
 
                           final change_item = new BoardData(
-                              iSort, modify_i,
+                              widget.get_data_for_modifying.listSortingNum, widget.get_data_for_modifying.listNum, widget.get_data_for_modifying.writer,
                               _titleController.text,
-                              _contentController.text, now);
+                              _contentController.text, thisTime, widget.get_data_for_modifying.isNoModify);
 
                           Navigator.pop(context, change_item);
                         }
