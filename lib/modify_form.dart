@@ -287,7 +287,7 @@ class ModifyFormState extends State<ModifyForm> {
                           final change_item = new BoardData(
                               widget.get_data_for_modifying.listSortingNum, widget.get_data_for_modifying.listNum, widget.get_data_for_modifying.writer,
                               _titleController.text,
-                              _contentController.text, thisTime, widget.get_data_for_modifying.isNoModify);
+                              _contentController.text, widget.get_data_for_modifying.insertTime, thisTime, widget.get_data_for_modifying.isNoModify);
 
                           Navigator.pop(context, change_item);
                         }

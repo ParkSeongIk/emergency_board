@@ -296,7 +296,7 @@ class InsertFormState extends State<InsertForm> {
 
                           String thisTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
 
-                          final input_item = new BoardData(input_iSort, input_i, widget.writer ,_titleController.text,_contentController.text, thisTime, true);
+                          final input_item = new BoardData(input_iSort, input_i, widget.writer ,_titleController.text,_contentController.text, thisTime, thisTime, true);
 
                           Navigator.pop(context, input_item);
 

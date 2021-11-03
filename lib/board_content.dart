@@ -72,7 +72,7 @@ class _BoardContentState extends State<BoardContent> {
     // print(widget.selected_item.listNum.toString()+' 번째 게시글 실행 (build)');
     // print('넘어온 뒤 수정한 이력체크');
     // print(widget.isNoModify);
-    _DatePrint();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -100,19 +100,29 @@ class _BoardContentState extends State<BoardContent> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      date_updating,
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontSize: 12, color: Colors.black,
-                      ),
-                    ),
+              Expanded(
+                child: Text(
+                  _DatePrint(),
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontSize: 12, color: Colors.black,
                   ),
+                ),
+              ),
+
+
+
                 ],
               ),
             ),
           ),
+
+          Container(
+            color: Colors.black26,
+            width: 350,
+            height: 1,
+          ),
+
           Padding(
             padding: const EdgeInsets.only(
                 left: 25, top: 15, right: 25, bottom: 15),
@@ -249,8 +259,8 @@ class _BoardContentState extends State<BoardContent> {
                         ),
                         onPressed: () {
                           // text가 listtile로 출력됨. - listtile 내에서 삭제기능만 넣을 예정.
-                          print('댓글 정렬 값 : '+i_replySorting.toString());
-                          print('댓글 순번 : '+i_reply.toString());
+                          // print('댓글 정렬 값 : '+i_replySorting.toString());
+                          // print('댓글 순번 : '+i_reply.toString());
                           _addReplyData(ReplyData(i_replySorting, i_reply, widget.selected_item.writer, _replyController.text, now));
 
                           // pop 이 되어서 DB가 있다고 해도 변수 값이 리셋됨.
@@ -301,21 +311,23 @@ class _BoardContentState extends State<BoardContent> {
 
 
   // 날짜 출력 방식 전환
-  void _DatePrint() {
-
-    if(widget.isNoModify=true) {
+  String _DatePrint() {
+//     print('수정 여부');
+//     print(widget.isNoModify);
+//     print('시간');
+// print(widget.selected_item.datetime);
+    if(widget.isNoModify==true) {
       insert_date = widget.selected_item.datetime;
       setState(() {
         date_updating = '작성 날짜'+'\n'+widget.selected_item.datetime;
       });
-
     }
-    else if(widget.isNoModify=false) {
+    else {
       setState(() {
         date_updating = '마지막으로 수정된 날짜'+'\n'+widget.selected_item.datetime;
       });
-
     }
+    return date_updating;
   }
 
   // 게시글 수정 네비게이터
@@ -327,17 +339,11 @@ class _BoardContentState extends State<BoardContent> {
         widget.selected_item.writer,
         widget.selected_item.title,
         widget.selected_item.description,
+        widget.selected_item.insertTime,
         widget.selected_item.datetime,
         widget.selected_item.isNoModify);
 
-    BoardData get_data = new BoardData(
-        widget.selected_item.listSortingNum,
-        widget.selected_item.listNum,
-        widget.selected_item.writer,
-        null,
-        null,
-        null,
-        widget.selected_item.isNoModify);
+    BoardData get_data;
 
     get_data = await Navigator.push(
       context,
@@ -356,20 +362,20 @@ class _BoardContentState extends State<BoardContent> {
 
     else {
       try {
-        print('게시글 수정 작업 로직으로 넘어옴');
-
-        print('게시글 정렬 값 : '+widget.selected_item.listSortingNum.toString());
-        print('');
-        print('게시글 번호 : '+widget.selected_item.listNum.toString());
-        print('');
-        print('수정하기 전 제목 : '+widget.selected_item.title.toString());
-        print('수정하기 전 내용 : '+widget.selected_item.description.toString());
-        print('');
-        print('수정할 제목 : '+get_data.title.toString());
-        print('수정할 내용 : '+get_data.description.toString());
-        print('게시글이 마지막으로 수정된 시간 : '+get_data.datetime.toString());
-        print('');
-        print('이후, 수정처리됨');
+        // print('게시글 수정 작업 로직으로 넘어옴');
+        //
+        // print('게시글 정렬 값 : '+widget.selected_item.listSortingNum.toString());
+        // print('');
+        // print('게시글 번호 : '+widget.selected_item.listNum.toString());
+        // print('');
+        // print('수정하기 전 제목 : '+widget.selected_item.title.toString());
+        // print('수정하기 전 내용 : '+widget.selected_item.description.toString());
+        // print('');
+        // print('수정할 제목 : '+get_data.title.toString());
+        // print('수정할 내용 : '+get_data.description.toString());
+        // print('게시글이 마지막으로 수정된 시간 : '+get_data.datetime.toString());
+        // print('');
+        // print('이후, 수정처리됨');
       }
       catch(on, StackTrace) {
         StackFrame.asynchronousSuspension;
@@ -378,7 +384,9 @@ class _BoardContentState extends State<BoardContent> {
 
 
       // 수정 처리
-      final return_item = new ManipulateData(get_data.listNum, get_data.title, get_data.description, MODIFY_DATA);
+      final return_item = new ManipulateData(get_data.listNum, get_data.title, get_data.description, insert_date, get_data.datetime, MODIFY_DATA);
+      // print('최초 등록 시간'+insert_date);
+      // print('수정된 시간'+get_data.datetime);
       Navigator.pop(context, return_item);
 
     }
@@ -434,20 +442,20 @@ class _BoardContentState extends State<BoardContent> {
 
     if(delete_flag==true) {
 
-      print('게시글 삭제 작업 로직으로 넘어옴');
+      // print('게시글 삭제 작업 로직으로 넘어옴');
+      //
+      // print('게시글 정렬 값 : '+item_listSortingNo.toString());
+      // print('');
+      // print('게시글 번호 : '+item_listNo.toString());
+      // print('');
+      // print('삭제될 게시글의 제목 : '+item_title.toString());
+      // print('삭제될 게시글의 내용 : '+item_description.toString());
+      // print('');
+      // print('게시글이 마지막으로 수정된 시각 : '+item_datetime.toString());
+      // print('');
+      // print('이후, 삭제처리됨');
 
-      print('게시글 정렬 값 : '+item_listSortingNo.toString());
-      print('');
-      print('게시글 번호 : '+item_listNo.toString());
-      print('');
-      print('삭제될 게시글의 제목 : '+item_title.toString());
-      print('삭제될 게시글의 내용 : '+item_description.toString());
-      print('');
-      print('게시글이 마지막으로 수정된 시각 : '+item_datetime.toString());
-      print('');
-      print('이후, 삭제처리됨');
-
-      final return_item = new ManipulateData(item_listNo, item_title, item_description, DELETE_DATA);
+      final return_item = new ManipulateData(item_listNo, item_title, item_description, insert_date, item_datetime, DELETE_DATA);
       Navigator.pop(context, return_item);
 
     }
@@ -502,19 +510,19 @@ class _BoardContentState extends State<BoardContent> {
 
     if(delete_flag==true) {
 
-      print('댓글 삭제 작업 로직으로 넘어옴');
+      // print('댓글 삭제 작업 로직으로 넘어옴');
 
 
-      print('삭제될 댓글 정렬 값 : '+data.replySortingNum.toString());
-      print('삭제될 댓글 순번 : '+data.replyNum.toString());
-      print('');
-      print('댓글이 등록된 시간 : '+data.replyDatetime.toString());
-      print('');
-      print('이후, 삭제처리됨');
+      // print('삭제될 댓글 정렬 값 : '+data.replySortingNum.toString());
+      // print('삭제될 댓글 순번 : '+data.replyNum.toString());
+      // print('');
+      // print('댓글이 등록된 시간 : '+data.replyDatetime.toString());
+      // print('');
+      // print('이후, 삭제처리됨');
 
       _deleteReplyData(data);
 
-      print('댓글 삭제 완료');
+      // print('댓글 삭제 완료');
 
     }
 
